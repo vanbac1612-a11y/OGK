@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenGuard Kids — Trợ lý của em</title>
+<style>
+:root{
+  --bg:#f2f6f3;
+  --card:#ffffff;
+  --ink:#1b2620;
+  --mute:#637069;
+  --line:#e2ebe5;
+  --input-bg:#eef2ef;
+  --ok:#1e7a53;
+  --warn:#f2a93b;
+  --bad:#e4572e;
+  --brand:#1e7a53;
+  --brand-hover:#176242;
+  --brand-soft:#e8f2ec;
+  --r:18px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:radial-gradient(circle at 88% 12%, #dff1e5 0%, #f3f7f4 48%, #edf3ef 100%);
+  color:var(--ink);
+  font:16px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif;
+  min-height:100vh;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid rgba(30,122,83,.35);outline-offset:2px}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 96px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:1.45rem;margin:0;letter-spacing:-.01em}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:5px 12px;font-size:.85rem}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ok)}
+.dot.off{background:var(--warn)}
+nav{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+nav button{flex:1;min-width:120px;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:10px;cursor:pointer;font-weight:600;transition:.15s}
+nav button[aria-selected=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:0 4px 18px rgba(27,38,32,.03)}
+h2{font-size:1.15rem;margin:0 0 8px}
+.muted{color:var(--mute);font-size:.92rem}
+.hero{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.ring{position:relative;width:150px;height:150px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring .t{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-weight:700;font-size:1.25rem;line-height:1.2}
+.big{font-size:1.6rem;font-weight:700;margin:0}
+.bar{height:10px;background:var(--input-bg);border-radius:9px;overflow:hidden;margin:4px 0 12px}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:9px}
+.row{display:flex;justify-content:space-between;gap:10px;font-size:.95rem}
+.note{background:var(--brand-soft);border-left:4px solid var(--brand);padding:10px 12px;border-radius:10px;font-size:.88rem;margin-top:10px}
+label{display:block;font-weight:600;margin:12px 0 6px;font-size:.95rem}
+input[type=text],input[type=email],input[type=password],textarea,select{
+  width:100%;
+  border:1.5px solid transparent;
+  border-radius:14px;
+  padding:12px 14px;
+  background:var(--input-bg);
+  transition:.15s;
+}
+input[type=text]:focus,input[type=email]:focus,input[type=password]:focus,textarea:focus,select:focus{
+  background:#fff;
+  border-color:var(--brand);
+  outline:none;
+}
+textarea{min-height:74px;resize:vertical}
+.btn{border:0;border-radius:14px;padding:12px 18px;font-weight:600;cursor:pointer;background:var(--brand);color:#fff;transition:.15s}
+.btn:hover{background:var(--brand-hover)}
+.btn.alt{background:var(--input-bg);color:var(--ink)}
+.btn.alt:hover{background:#e3eae5}
+.btn.warn{background:var(--warn);color:#3a2600}
+.btn.sm{padding:6px 12px;font-size:.85rem;border-radius:99px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips label{margin:0;font-weight:600}
+.chips input{position:absolute;opacity:0}
+.chips span{display:inline-block;border:1.5px solid var(--line);background:var(--input-bg);border-radius:99px;padding:6px 14px;cursor:pointer}
+.chips input:checked+span{background:var(--brand);color:#fff;border-color:var(--brand)}
+.tag{font-size:.78rem;font-weight:700;border-radius:99px;padding:2px 10px;white-space:nowrap}
+.tag.wait{background:#fff0d1;color:#7a4b00}.tag.yes{background:#d6f3ee;color:#0b5d53}.tag.no{background:#fde0d8;color:#8a2a10}
+ul.plain{list-style:none;padding:0;margin:0}
+ul.plain li{padding:10px 0;border-bottom:1px solid var(--line)}
+ul.plain li:last-child{border:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.sched{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;margin:6px 0}
+.sched i{height:16px;border-radius:3px;background:var(--input-bg)}
+.sched i.on{background:var(--ok)}
+.sched-l{display:flex;justify-content:space-between;font-size:.75rem;color:var(--mute)}
+.badge{display:inline-block;background:var(--brand-soft);color:var(--ink);border-radius:8px;padding:3px 10px;margin:3px 4px 3px 0;font-size:.9rem}
+.safe{border:1.5px solid var(--ok);background:#effaf5}
+footer{position:fixed;left:0;right:0;bottom:0;background:#16261e;color:#fff;padding:10px 16px;text-align:center;font-size:.88rem;z-index:10}
+footer b{color:#ffd37a}
+.overlay{position:fixed;inset:0;background:rgba(22,38,30,.85);display:none;place-items:center;padding:20px;z-index:20}
+.overlay.show{display:grid}
+.modal{background:#fff;border-radius:22px;max-width:460px;width:100%;padding:26px;text-align:center}
+.modal .ico{font-size:3rem;line-height:1}
+.modal h2{font-size:1.4rem}
+.modal .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+#toasts{position:fixed;top:14px;right:14px;display:grid;gap:8px;z-index:30;max-width:320px}
+.toast{background:#fff;border-left:6px solid var(--warn);border-radius:12px;padding:12px 14px;box-shadow:0 8px 24px rgba(27,38,32,.16)}
+.toast.bad{border-color:var(--bad)}.toast.ok{border-color:var(--ok)}
+details.demo{margin-top:20px;font-size:.85rem}
+details.demo button{margin:3px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer}
+
+/* ===== Màn hình đăng nhập phong cách OpenGuard Kids ===== */
+.auth-screen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px 16px 76px;
+}
+.auth-card{
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(8px);
+  border:1px solid #e4ece7;
+  border-radius:24px;
+  max-width:430px;
+  width:100%;
+  padding:30px 26px;
+  box-shadow:0 12px 36px rgba(25,45,35,.06);
+}
+.brand-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:22px;
+}
+.brand-logo{
+  width:38px;
+  height:38px;
+  border-radius:11px;
+  background:var(--brand);
+  display:grid;
+  place-items:center;
+  color:#fff;
+  flex:none;
+}
+.brand-name{
+  font-size:1.15rem;
+  font-weight:700;
+  color:var(--ink);
+  letter-spacing:-.01em;
+}
+.auth-title{
+  font-size:1.75rem;
+  font-weight:700;
+  line-height:1.25;
+  margin:0 0 10px;
+  color:var(--ink);
+  letter-spacing:-.02em;
+}
+.auth-sub{
+  color:var(--mute);
+  font-size:.96rem;
+  line-height:1.5;
+  margin:0 0 22px;
+}
+.pw-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+.pw-wrap input{
+  padding-right:44px;
+}
+.pw-toggle{
+  position:absolute;
+  right:10px;
+  background:none;
+  border:0;
+  color:#6c7872;
+  cursor:pointer;
+  padding:6px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+}
+.pw-toggle:hover{color:var(--ink);background:rgba(0,0,0,.04)}
+.field-hint{
+  font-size:.84rem;
+  color:var(--mute);
+  margin-top:6px;
+}
+.auth-err{
+  color:var(--bad);
+  font-size:.88rem;
+  font-weight:600;
+  margin-top:10px;
+  min-height:1.3em;
+}
+.auth-submit{
+  width:100%;
+  margin-top:14px;
+  padding:13px 18px;
+  font-size:1rem;
+  border-radius:14px;
+}
+.auth-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.auth-sec-btn{
+  border:1px solid #e4ece7;
+  background:#f7faf8;
+  color:var(--ink);
+  border-radius:14px;
+  padding:11px 10px;
+  font-size:.92rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:.15s;
+}
+.auth-sec-btn.demo{
+  background:var(--input-bg);
+  border-color:transparent;
+}
+.auth-sec-btn:hover{background:#e7eee9}
+.auth-foot{
+  margin-top:20px;
+  font-size:.84rem;
+  line-height:1.5;
+  color:var(--mute);
+}
+
+@media (prefers-reduced-motion:no-preference){.ring circle.p{transition:stroke-dashoffset .8s}}
+</style>
+</head>
+<body>
+
+<!-- ===== MÀN HÌNH ĐĂNG NHẬP (THEO MẪU OPENGUARD KIDS) ===== -->
+<main class="auth-screen" id="loginScreen">
+  <div class="auth-card">
+    <div class="brand-row">
+      <div class="brand-logo" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <span class="brand-name">OpenGuard Kids</span>
+    </div>
+
+    <h1 class="auth-title" id="authTitle">Chào mừng em trở lại</h1>
+    <p class="auth-sub" id="authSub">Kết nối tài khoản để xem thời gian dùng máy và luật bảo vệ của gia đình.</p>
+
+    <form id="authForm" novalidate>
+      <div id="nameFieldBox" hidden>
+        <label for="childNameInput">Tên của em</label>
+        <input type="text" id="childNameInput" placeholder="Ví dụ: Bin" autocomplete="name">
+      </div>
+
+      <label for="emailInput">Email hoặc tên tài khoản</label>
+      <input type="email" id="emailInput" placeholder="em@giadinh.vn" autocomplete="username">
+
+      <label for="pwInput">Mật khẩu</label>
+      <div class="pw-wrap">
+        <input type="password" id="pwInput" placeholder="" autocomplete="current-password">
+        <button type="button" class="pw-toggle" id="togglePwBtn" aria-label="Hiện hoặc ẩn mật khẩu">
+          <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="field-hint">Ít nhất 10 ký tự.</div>
+
+      <div class="auth-err" id="authErr" role="alert"></div>
+
+      <button type="submit" class="btn auth-submit" id="authSubmitBtn">Đăng nhập</button>
+    </form>
+
+    <div class="auth-actions">
+      <button type="button" class="auth-sec-btn" id="switchModeBtn">Tạo tài khoản mới</button>
+      <button type="button" class="auth-sec-btn demo" id="demoEnterBtn">Xem bản demo</button>
+    </div>
+
+    <p class="auth-foot">Tài khoản và dữ liệu kết nối thật được lưu trên Supabase. Bản demo sử dụng dữ liệu riêng trong trình duyệt.</p>
+  </div>
+</main>
+
+<!-- ===== GIAO DIỆN CHÍNH SAU KHI ĐĂNG NHẬP ===== -->
+<div class="wrap" id="appMain" hidden>
+  <header>
+    <div>
+      <h1 id="hello">Xin chào!</h1>
+      <div class="muted">Đây là trợ lý giúp em dùng máy tính cân bằng hơn.</div>
+    </div>
+    <div style="display:grid;gap:6px;justify-items:end">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+        <span class="pill" title="Trợ lý luôn hiển thị khi đang chạy"><span class="dot"></span>Trợ lý đang chạy</span>
+        <button type="button" class="btn alt sm" id="logoutBtn" title="Đăng xuất tài khoản">Đăng xuất</button>
+      </div>
+      <span class="pill" id="net"><span class="dot" id="netdot"></span><span id="nettxt">Đã kết nối với ba mẹ</span></span>
+    </div>
+  </header>
+
+  <nav role="tablist" aria-label="Các mục">
+    <button role="tab" aria-selected="true" data-tab="today">Hôm nay</button>
+    <button role="tab" aria-selected="false" data-tab="help">Xin giúp đỡ</button>
+    <button role="tab" aria-selected="false" data-tab="rules">Luật của em</button>
+  </nav>
+
+  <!-- Hôm nay -->
+  <section id="tab-today">
+    <div class="card hero">
+      <div class="ring" role="img" aria-label="Thời gian còn lại">
+        <svg width="150" height="150" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#e4ece7" stroke-width="12"/>
+          <circle class="p" id="arc" cx="60" cy="60" r="52" fill="none" stroke="#1e7a53" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t" id="ringtxt">--</div>
+      </div>
+      <div style="flex:1;min-width:200px">
+        <p class="big" id="remain">Đang tải...</p>
+        <div class="muted" id="usedline"></div>
+        <div class="muted" id="winline"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Hôm nay em đã dùng gì</h2>
+      <div class="grid">
+        <div><strong>Ứng dụng</strong><div id="apps"></div></div>
+        <div><strong>Trang web (tên miền)</strong><div id="doms"></div></div>
+      </div>
+      <div class="note">Trợ lý chỉ ghi lại: tên ứng dụng, tên miền, thời lượng và thời điểm. Trợ lý <b>không</b> lưu địa chỉ trang đầy đủ, tiêu đề cửa sổ, chữ em gõ hay ảnh chụp màn hình. Ba mẹ xem đúng bản báo cáo này.</div>
+    </div>
+  </section>
+
+  <!-- Xin giúp đỡ -->
+  <section id="tab-help" hidden>
+    <div class="grid">
+      <form class="card" id="fTime">
+        <h2>Xin thêm giờ</h2>
+        <div class="muted">Gửi yêu cầu cho ba mẹ. Ba mẹ sẽ trả lời em.</div>
+        <label>Em muốn thêm bao lâu?</label>
+        <div class="chips" id="mins">
+          <label><input type="radio" name="m" value="15" checked><span>15 phút</span></label>
+          <label><input type="radio" name="m" value="30"><span>30 phút</span></label>
+          <label><input type="radio" name="m" value="60"><span>1 giờ</span></label>
+        </div>
+        <label for="tReason">Vì sao em cần thêm giờ?</label>
+        <textarea id="tReason" placeholder="Ví dụ: em cần làm xong bài tập nhóm"></textarea>
+        <p><button class="btn" type="submit">Gửi yêu cầu xin thêm giờ</button></p>
+      </form>
+      <form class="card" id="fBlock">
+        <h2>Con nghĩ trang này bị chặn nhầm</h2>
+        <div class="muted">Nói cho ba mẹ biết để xem lại.</div>
+        <label for="bSubject">Ứng dụng hoặc tên miền nào?</label>
+        <input type="text" id="bSubject" placeholder="Ví dụ: hocmai.vn">
+        <label for="bReason">Em dùng nó để làm gì?</label>
+        <textarea id="bReason" placeholder="Ví dụ: đây là trang học trực tuyến của lớp"></textarea>
+        <p><button class="btn warn" type="submit">Gửi để ba mẹ xem lại</button></p>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Yêu cầu của em</h2>
+      <ul class="plain" id="reqs"></ul>
+    </div>
+  </section>
+
+  <!-- Luật của em -->
+  <section id="tab-rules" hidden>
+    <div class="card">
+      <h2>Luật hiện tại</h2>
+      <div class="row"><span>Thời gian mỗi ngày</span><strong id="rQuota"></strong></div>
+      <div style="margin-top:10px">Giờ được dùng máy (hôm nay)</div>
+      <div class="sched" id="sched" aria-hidden="true"></div>
+      <div class="sched-l"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
+      <p id="rWin" class="muted"></p>
+      <div><strong>Ứng dụng bị chặn</strong><div id="rApps"></div></div>
+      <div style="margin-top:8px"><strong>Nhóm trang web bị chặn</strong><div id="rCats"></div></div>
+      <div class="note">Ba mẹ cũng xem được đúng những luật này, và em xem được mọi lần luật đổi.</div>
+    </div>
+    <div class="card safe">
+      <h2>Luôn mở, không bao giờ bị chặn</h2>
+      <span class="badge">Cổng thông tin trường học</span>
+      <span class="badge">Tổng đài 111 bảo vệ trẻ em</span>
+      <span class="badge">Dịch vụ cứu hộ khẩn cấp</span>
+      <div class="muted" style="margin-top:6px">Kể cả khi máy đang khóa hay hết giờ, em vẫn gọi được khi cần giúp.</div>
+    </div>
+    <div class="card">
+      <h2>Ai đã đổi luật, lúc nào</h2>
+      <ul class="plain" id="log"></ul>
+    </div>
+  </section>
+
+  <details class="demo">
+    <summary>Bảng demo (chỉ dùng khi chạy thử, xóa khi nộp)</summary>
+    <button data-d="w10">Cảnh báo 10 phút</button>
+    <button data-d="w5">Cảnh báo 5 phút</button>
+    <button data-d="w1">Cảnh báo 1 phút</button>
+    <button data-d="app">Chặn ứng dụng</button>
+    <button data-d="web">Chặn trang web</button>
+    <button data-d="lock">Hết giờ</button>
+    <button data-d="off">Bật/tắt offline</button>
+    <button data-d="reply">Ba mẹ trả lời</button>
+  </details>
+</div>
+
+<footer>Cần giúp ngay? Gọi <b>111</b>, tổng đài quốc gia bảo vệ trẻ em. Số này không bao giờ bị chặn.</footer>
+
+<!-- Màn hình chặn -->
+<div class="overlay" id="ovBlock" role="alertdialog" aria-labelledby="bTitle">
+  <div class="modal">
+    <div class="ico" aria-hidden="true">🛑</div>
+    <h2 id="bTitle"></h2>
+    <p id="bWhy"></p>
+    <p class="muted" id="bBy"></p>
+    <div class="btns">
+      <button class="btn warn" id="bWrong">Con nghĩ bị chặn nhầm</button>
+      <button class="btn alt" id="bClose">Đã hiểu</button>
+    </div>
+  </div>
+</div>
+<!-- Màn hình hết giờ -->
+<div class="overlay" id="ovLock" role="alertdialog" aria-labelledby="lTitle">
+  <div class="modal">
+    <div class="ico" aria-hidden="true">🌙</div>
+    <h2 id="lTitle">Hết giờ dùng máy rồi</h2>
+    <p id="lWhy"></p>
+    <div class="btns"><button class="btn" id="lMore">Xin thêm giờ</button></div>
+    <p class="muted">Cần giúp khẩn cấp? Gọi 111, số này không bao giờ bị chặn.</p>
+  </div>
+</div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+/* ===== Cấu hình: agent Service mở HTTP trên 127.0.0.1 và chèn token ===== */
+const API = window.OGK_API || "http://127.0.0.1:8787";
+const TOKEN = window.OGK_TOKEN || "";
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let S = null, live = false, queue = [], warned = {};
+let loggedChild = null, isRegisterMode = false;
+
+/* ===== Đăng nhập / Đăng ký / Xem bản demo ===== */
+function setAuthMode(register){
+  isRegisterMode = register;
+  $("#authErr").textContent = "";
+  $("#nameFieldBox").hidden = !register;
+  $("#authTitle").textContent = register ? "Tạo tài khoản mới" : "Chào mừng em trở lại";
+  $("#authSub").textContent = register
+    ? "Đăng ký tài khoản để kết nối thiết bị với bố mẹ."
+    : "Kết nối tài khoản để xem thời gian dùng máy và luật bảo vệ của gia đình.";
+  $("#authSubmitBtn").textContent = register ? "Tạo tài khoản" : "Đăng nhập";
+  $("#switchModeBtn").textContent = register ? "Đã có tài khoản? Đăng nhập" : "Tạo tài khoản mới";
+}
+
+$("#switchModeBtn").addEventListener("click", () => setAuthMode(!isRegisterMode));
+
+$("#togglePwBtn").addEventListener("click", () => {
+  const pw = $("#pwInput");
+  const show = pw.type === "password";
+  pw.type = show ? "text" : "password";
+  $("#eyeIcon").innerHTML = show
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+});
+
+$("#authForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const email = $("#emailInput").value.trim();
+  const pw = $("#pwInput").value;
+  const customName = $("#childNameInput").value.trim();
+
+  if(!email){
+    $("#authErr").textContent = "Vui lòng nhập Email hoặc tên tài khoản.";
+    $("#emailInput").focus();
+    return;
+  }
+  if(pw.length < 10){
+    $("#authErr").textContent = "Mật khẩu phải có ít nhất 10 ký tự.";
+    $("#pwInput").focus();
+    return;
+  }
+
+  const derivedName = customName || (email.includes("@") ? email.split("@")[0] : email);
+  const displayName = derivedName.charAt(0).toUpperCase() + derivedName.slice(1);
+  $("#authErr").textContent = "";
+  enterApp(displayName, false);
+});
+
+$("#demoEnterBtn").addEventListener("click", () => {
+  enterApp("Bin", true);
+});
+
+function enterApp(childName, isDemo){
+  loggedChild = childName;
+  try{ sessionStorage.setItem("ogk_child", childName); }catch(e){}
+  $("#loginScreen").hidden = true;
+  $("#appMain").hidden = false;
+  refresh(childName).then(() => {
+    toast(isDemo ? "Đang mở bản demo với dữ liệu mẫu." : ("Xin chào " + childName + "! Đã kết nối tài khoản."), "ok");
+  });
+}
+
+function logoutChild(){
+  loggedChild = null;
+  try{ sessionStorage.removeItem("ogk_child"); }catch(e){}
+  $("#appMain").hidden = true;
+  $("#loginScreen").hidden = false;
+  $("#pwInput").value = "";
+  $("#authErr").textContent = "";
+}
+
+$("#logoutBtn").addEventListener("click", logoutChild);
+
+/* ===== Dữ liệu mẫu (khi chưa có agent) ===== */
+function demoState(childName){
+  return {
+    child: childName || "Bin", quotaSec:90*60, usedSec:18*60, locked:false, online:true, policyVersion:12,
+    window:{from:7,to:21},
+    apps:[{name:"Microsoft Word",sec:1500},{name:"Chrome",sec:2100},{name:"Minecraft Education",sec:960}],
+    domains:[{name:"hocmai.vn",sec:1200},{name:"wikipedia.org",sec:540},{name:"youtube.com",sec:420}],
+    rules:{blockedApps:["Trò chơi bắn súng","Ứng dụng chat ẩn danh"],blockedCats:["Mạng xã hội","Nội dung không phù hợp lứa tuổi"]},
+    changes:[
+      {t:"Hôm qua 20:15",by:"Mẹ",text:"Tăng thời gian ngày cuối tuần lên 120 phút."},
+      {t:"Thứ Hai 07:40",by:"Ba",text:"Chặn nhóm Mạng xã hội."},
+      {t:"Tuần trước",by:"Mẹ",text:"Đặt giờ dùng máy từ 7h đến 21h."}],
+    requests:[
+      {id:1,type:"time",subject:"Thêm 15 phút",status:"yes",reply:"Được, nhớ làm xong bài nhé!",time:"Hôm qua"}]
+  };
+}
+
+/* ===== Gọi agent ===== */
+async function api(path,opt={}){
+  const ctl = new AbortController(); const to = setTimeout(()=>ctl.abort(),1500);
+  try{
+    const r = await fetch(API+path,{...opt,signal:ctl.signal,headers:{"Content-Type":"application/json","X-OGK-Token":TOKEN}});
+    if(!r.ok) throw 0; return await r.json();
+  } finally { clearTimeout(to); }
+}
+async function refresh(childName){
+  try{ S = await api("/api/state"); live = true; }
+  catch(e){ if(!S){ S = demoState(childName || loggedChild); } live = false; }
+  if(childName || loggedChild) S.child = childName || loggedChild;
+  render();
+}
+async function sendRequest(r){
+  r.status = "wait"; r.time = "Vừa xong"; r.id = Date.now();
+  S.requests.unshift(r);
+  if(!S.online){ queue.push(r); toast("Đã lưu yêu cầu. Trợ lý sẽ gửi khi có mạng.","ok"); render(); return; }
+  if(live){ try{ await api("/api/request",{method:"POST",body:JSON.stringify(r)}); }catch(e){ queue.push(r); } }
+  toast("Đã gửi cho ba mẹ. Em sẽ thấy câu trả lời ở đây.","ok"); render();
+}
+
+/* ===== Hiển thị ===== */
+function dur(sec){
+  sec = Math.max(0, Math.round(sec)); const h = Math.floor(sec/3600), m = Math.floor(sec%3600/60), s = sec%60;
+  if(sec < 600) return m+" phút "+s+" giây";
+  return (h? h+" giờ ":"") + m + " phút";
+}
+function bars(list){
+  const max = Math.max(1,...list.map(x=>x.sec));
+  return list.length ? list.map(x=>`<div class="row"><span>${esc(x.name)}</span><span class="muted">${dur(x.sec)}</span></div><div class="bar"><i style="width:${x.sec/max*100}%"></i></div>`).join("")
+    : '<div class="muted">Chưa có gì hôm nay.</div>';
+}
+function render(){
+  if(!S) return;
+  $("#hello").textContent = "Xin chào " + S.child + "!";
+  $("#netdot").className = "dot" + (S.online?"":" off");
+  $("#nettxt").textContent = S.online ? "Đã kết nối với ba mẹ" : "Đang offline, luật vẫn được áp dụng";
+  const left = Math.max(0,S.quotaSec - S.usedSec);
+  $("#remain").textContent = S.locked ? "Máy đang khóa" : "Còn " + dur(left);
+  $("#ringtxt").innerHTML = S.locked ? "0" : (left>=600 ? Math.round(left/60)+"<br><small>phút</small>" : Math.floor(left/60)+":"+String(left%60).padStart(2,"0"));
+  const arc = $("#arc"); arc.setAttribute("stroke-dashoffset", S.quotaSec ? 326.7*(1-left/S.quotaSec) : 326.7);
+  arc.setAttribute("stroke", left<=60?"#e4572e":left<=300?"#f2a93b":"#1e7a53");
+  $("#usedline").textContent = "Hôm nay được dùng " + dur(S.quotaSec) + ". Em đã dùng " + dur(S.usedSec) + ".";
+  $("#winline").textContent = "Máy mở từ " + S.window.from + "h đến " + S.window.to + "h.";
+  $("#apps").innerHTML = bars(S.apps); $("#doms").innerHTML = bars(S.domains);
+  const R = S.rules;
+  $("#rQuota").textContent = dur(S.quotaSec) + " mỗi ngày";
+  $("#sched").innerHTML = Array.from({length:24},(_,i)=>`<i class="${i>=S.window.from&&i<S.window.to?"on":""}"></i>`).join("");
+  $("#rWin").textContent = "Phần màu xanh là giờ được dùng máy: " + S.window.from + "h đến " + S.window.to + "h. Ngoài giờ này máy sẽ khóa.";
+  $("#rApps").innerHTML = R.blockedApps.map(a=>`<span class="badge">${esc(a)}</span>`).join("") || "Không có";
+  $("#rCats").innerHTML = R.blockedCats.map(a=>`<span class="badge">${esc(a)}</span>`).join("") || "Không có";
+  $("#log").innerHTML = S.changes.map(c=>`<li><b>${esc(c.by)}</b> <span class="muted">${esc(c.t)}</span><br>${esc(c.text)}</li>`).join("");
+  const lbl = {wait:["wait","Đang chờ ba mẹ"],yes:["yes","Ba mẹ đồng ý"],no:["no","Ba mẹ chưa đồng ý"]};
+  $("#reqs").innerHTML = S.requests.length ? S.requests.map(r=>`<li><div class="row"><span><b>${r.type==="time"?"Xin thêm giờ":"Chặn nhầm"}</b>: ${esc(r.subject)}</span><span class="tag ${lbl[r.status][0]}">${lbl[r.status][1]}</span></div>${r.reply?`<div class="muted">Ba mẹ nói: ${esc(r.reply)}</div>`:""}<div class="muted">${esc(r.time)}</div></li>`).join("")
+    : '<li class="muted">Em chưa gửi yêu cầu nào.</li>';
+  $("#ovLock").classList.toggle("show", !!S.locked && !!loggedChild);
+  if(S.locked) $("#lWhy").textContent = S.lockWhy || "Em đã dùng hết thời gian hôm nay. Ba mẹ sẽ thấy em có thể xin thêm giờ.";
+}
+function toast(msg,kind=""){
+  const d = document.createElement("div"); d.className = "toast "+kind; d.textContent = msg;
+  $("#toasts").appendChild(d); setTimeout(()=>d.remove(), 6000);
+}
+function showBlock(b){
+  $("#bTitle").textContent = b.kind==="app" ? "Ứng dụng “"+b.subject+"” đang bị chặn" : "Trang “"+b.subject+"” đang bị chặn";
+  $("#bWhy").textContent = "Lý do: " + b.reason;
+  $("#bBy").textContent = "Luật này do " + b.by + " đặt (" + b.rule + ").";
+  $("#ovBlock").dataset.subject = b.subject; $("#ovBlock").classList.add("show"); $("#bClose").focus();
+}
+
+/* ===== Cảnh báo 10, 5, 1 phút ===== */
+function checkWarn(left){
+  [[600,"10 phút"],[300,"5 phút"],[60,"1 phút"]].forEach(([t,txt])=>{
+    if(left<=t && !warned[t]){ warned[t]=1; toast("Em còn "+txt+" dùng máy. Hãy lưu bài đang làm nhé.", t===60?"bad":""); }
+    if(left>t) warned[t]=0;
+  });
+}
+
+/* ===== Đồng hồ cục bộ (agent mới là nguồn chính xác) ===== */
+setInterval(()=>{
+  if(!loggedChild || !S || S.locked) return;
+  S.usedSec += 1; const left = S.quotaSec - S.usedSec;
+  checkWarn(left);
+  if(left<=0){ S.locked = true; S.lockWhy = ""; }
+  render();
+}, 1000);
+setInterval(()=>{ if(loggedChild && live) refresh(); }, 5000);
+
+/* ===== Sự kiện giao diện ===== */
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>go(b.dataset.tab)));
+function go(t){
+  document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===t));
+  ["today","help","rules"].forEach(x=>$("#tab-"+x).hidden = x!==t);
+}
+$("#fTime").addEventListener("submit",e=>{e.preventDefault();
+  const m = document.querySelector("input[name=m]:checked").value, why = $("#tReason").value.trim();
+  if(!why){ toast("Em hãy viết lý do để ba mẹ hiểu nhé.","bad"); $("#tReason").focus(); return; }
+  sendRequest({type:"time",subject:"Thêm "+m+" phút",minutes:+m,reason:why}); e.target.reset();
+});
+$("#fBlock").addEventListener("submit",e=>{e.preventDefault();
+  const s = $("#bSubject").value.trim(), why = $("#bReason").value.trim();
+  if(!s){ toast("Em hãy cho biết ứng dụng hoặc trang nào.","bad"); $("#bSubject").focus(); return; }
+  sendRequest({type:"unblock",subject:s,reason:why}); e.target.reset();
+});
+$("#bClose").onclick = ()=>$("#ovBlock").classList.remove("show");
+$("#bWrong").onclick = ()=>{ $("#ovBlock").classList.remove("show"); go("help"); $("#bSubject").value = $("#ovBlock").dataset.subject; $("#bReason").focus(); };
+$("#lMore").onclick = ()=>{ go("help"); $("#tReason").focus(); $("#ovLock").classList.remove("show"); };
+
+/* ===== Bảng demo ===== */
+document.querySelector("details.demo").addEventListener("click",e=>{
+  const d = e.target.dataset.d; if(!d) return;
+  if(d[0]==="w"){ const t = {w10:600,w5:300,w1:60}[d]; S.usedSec = S.quotaSec - t - 1; S.locked = false; $("#ovLock").classList.remove("show"); warned = {}; }
+  if(d==="app") showBlock({kind:"app",subject:"game.exe",reason:"Ứng dụng này thuộc nhóm trò chơi bắn súng, chưa hợp lứa tuổi.",by:"Mẹ",rule:"luật #7"});
+  if(d==="web") showBlock({kind:"web",subject:"facebook.com",reason:"Nhóm Mạng xã hội đang bị chặn trên máy này.",by:"Ba",rule:"luật #3"});
+  if(d==="lock"){ S.usedSec = S.quotaSec; S.locked = true; S.lockWhy = ""; }
+  if(d==="off"){ S.online = !S.online; if(S.online && queue.length){ toast("Đã gửi "+queue.length+" yêu cầu đã lưu.","ok"); queue = []; } }
+  if(d==="reply"){ const r = S.requests.find(x=>x.status==="wait"); if(r){ r.status="yes"; r.reply="Được rồi, 15 phút nhé."; } else toast("Chưa có yêu cầu nào đang chờ."); }
+  render();
+});
+
+/* ===== Khởi động ===== */
+try{
+  const saved = sessionStorage.getItem("ogk_child");
+  if(saved){
+    loggedChild = saved;
+    enterApp(saved, false);
+  }
+}catch(e){}
+</script>
+</body>
+</html>
